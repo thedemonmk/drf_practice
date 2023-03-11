@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_filters',
     'core',
     'ecommerce',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
