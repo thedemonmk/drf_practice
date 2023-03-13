@@ -10,10 +10,10 @@ from rest_framework.mixins import ListModelMixin,UpdateModelMixin,RetrieveModelM
 from django.views.generic.edit import FormView
 from ecommerce.forms import ReviewForm
 
-
 class ItemViewSet(
         ListModelMixin,
-        RetrieveModelMixin, 
+        RetrieveModelMixin,
+        UpdateModelMixin,
         viewsets.GenericViewSet
         ):
     """
@@ -23,8 +23,17 @@ class ItemViewSet(
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
-
-
+    def create(self, request):
+        try:
+            data = JSONParser().parse(request)
+            serializer = ItemSerializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
 
 class OrderViewSet(
         ListModelMixin,
